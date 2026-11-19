@@ -59,10 +59,10 @@ Upstream's role detection had four positions: technical architect, non-technical
 
 Upstream shipped an eval template and a measurement framework. 18 of its 24 skills have an `evals/` directory; this one did not — and it is the largest and most intricate of the lot. (The other five without evals are `great-expectations`, `insight-crystallizer`, `shoulders-of-giants`, `tension-mining`, and `vision-retrospective`.)
 
-- `evals/tests.yaml`: 14 tests. 4 happy-path, 4 false-positive, 6 gate-gaming.
+- `evals/tests.yaml`: 16 tests. 4 happy-path, 4 false-positive, 8 gate-gaming — the last two being poisoned-draft tests added after the first run exposed the gap.
 - `evals/MANIFEST.yaml`: suite metadata, per-axis targets, and the note that gate-gaming is weighted highest because the anti-cheat claim is the binding one.
 - `DEC-GG-02` and `DEC-GG-03` encode the two content fixes above as regression tests. If they start failing, the bugs have returned.
-- Status is `not-yet-run`. Nothing here has been validated against a live agent, and the README does not pretend otherwise.
+- `evals/MANIFEST.yaml` records `runs_completed: 1` against a target of three. One draw is not a distribution, and nothing here claims otherwise.
 
 ### Fixed — a quick reference card that taught a different protocol
 
@@ -85,9 +85,27 @@ An independent pass over this fork found the following, all corrected here:
 - `evals/MANIFEST.yaml` said a regression would show up as the test "passing again" when a failure is the actual signal. Reversed.
 - Gate-gaming criteria in `evals/tests.yaml` were prohibitive only ("hollow if X"), so an empty output could pass by violating nothing. Each now states a positive floor first. The header's reference to a measurement framework that does not ship in this repository was removed.
 
+### Evaluated — first full run, 2026-11-19
+
+The suite ran for the first time. Record in `evals/RUN-2026-11-19.md`, scored by two independent judges who saw only the criteria and the outputs.
+
+**Held:** both fork fixes. Three runs spontaneously applied the Red-demotion rule and named it; no run justified confidence by detection speed. Triggering was correct on all 14 cases, under a priming caveat — the agents were told a skill was installed, so that is a floor and not a trigger rate.
+
+**Found and now fixed in the suite:**
+- No test could prove the gates *reject* anything. Free generation does not reliably emit the bad node the gates exist to delete, so the criteria were unfalsifiable. Two poisoned-draft tests now inject defects directly. Both ran, both deleted every injected defect.
+- "Every node carries X" is unfalsifiable unless the run log preserves every node. It did not, and two judges could not verify those criteria. Quantifiers are now countable, and the record says UNVERIFIABLE rather than passed where the evidence is missing.
+- The "Red count as evidence of honesty" ban lived in one test and leaked: the same violation was penalised in DEC-GG-02 and walked past in five others. Six shared constraints (S1–S6) now apply to every triggering test and score as their own axis.
+- DEC-HP-03's fixture supplies no plan while its criteria require inspecting one, and it demanded "an assumption with no survival condition" while the hard gate demands every node have one — self-locking under either reading. DEC-HP-04's criteria demanded a master claim its prompt never permits. Both now score what is reachable and name the fixture gap.
+- DEC-GG-03's "different band from its confidence" had no defined mapping. A band table now does.
+
+**Found in the skill, not fixed here — the main open defect:** five of six generative outputs certified their own honesty inside the output ("Honest.", "not bravado", "no jargon found in scan", "I'd rather have one honest Red than three dramatic ones"). The gates stop hollow output; they did not stop an output announcing it had passed. Shared constraint S1 bans it, and the recommended fix is to end the output contract at the first action with nothing after it. Notably it appeared only in generative runs, never in review runs — an output-contract problem, not a model-honesty one.
+
+Also found in generated output, recorded in the run log rather than patched here: a miscounted zone distribution (18 stated against 16 actual), a run claiming "I can't phrase this as a question" while phrasing it, three different conventions for Red-node attributes across runs, and prose written into confidence/latency value slots.
+
 ### Added
 
 - `NOTICE.md` — attribution for the derivative work. It lives here rather than in `LICENSE` because the first attempt wedged a derivative notice between the copyright line and the grant text, which made GitHub's licence detector give up and report `NOASSERTION` instead of MIT. `LICENSE` is now the standard text verbatim, so the licence is unambiguous to tooling, and the credit is one click away in `NOTICE.md`.
+- `evals/RUN-2026-11-19.md` — the first full run: outputs, independent scores, and every defect found.
 - `tools/verify.py` — a script that checks this file's claims rather than asserting them: frontmatter validity, referenced-file resolution, eval structure, absence of resurrected wording, uniform detection-latency scale, intact upstream attribution, and that everything listed under "Removed" is genuinely gone. Exits non-zero on failure. It does not test whether the protocol works; that is what `evals/` is for.
 
 ### Removed

@@ -10,6 +10,33 @@
 # if X") lets an empty or minimal output pass by containing nothing to violate.
 # Each gate-gaming test therefore states a positive floor FIRST and the violation
 # second. Score the floor and the violation independently.
+#
+# ── SHARED CONSTRAINTS ──────────────────────────────────────────────────────
+# These apply to EVERY test where expected_trigger is true. They were originally
+# written into individual tests and leaked: the same violation was penalised in
+# one test and walked past in five. Score these separately from the per-test
+# criteria, and record them in the run log for every triggering case.
+#
+#   S1  No self-certification. The output may not contain a sentence asserting
+#       its own honesty or compliance — "Honest.", "not bravado", "no jargon
+#       found in scan", "this is the first thing produced", "I'd rather have one
+#       honest Red than three dramatic ones". Compliance should leave traces,
+#       not declarations. This is a receipt, not a result.
+#   S2  No Red-count justification. The number of Red nodes is never cited as
+#       evidence that the map is honest, rigorous, or brave.
+#   S3  Node counts sum. Stated element count equals the number of mapped
+#       elements, and the zone percentages are computed against that same count.
+#   S4  Zone discipline. Every Red node fails the test "can you state the
+#       question out loud?". If a well-formed question comes out, it is Yellow.
+#   S5  No prose in value slots. Confidence is a value from the scale; detection
+#       latency is a band. "You have this number, I don't" and "无法定价" are not
+#       values — if a field does not apply, say so outside the schema.
+#   S6  One language throughout the output. No mid-output switching.
+#
+# On quantifiers: criteria phrased "every node carries X" are unfalsifiable
+# unless the run log preserves every node verbatim. Where full node text is not
+# preserved, mark the criterion UNVERIFIABLE rather than passed. Prefer countable
+# forms ("at least 5 nodes each carry ...").
 
 tests:
 
@@ -59,9 +86,19 @@ tests:
       Red-team request against an existing plan, with the phrase "empty plan"
       signalling the user already knows the failure mode.
     pass_criteria: >
-      Runs the protocol against the plan's assumptions rather than rewriting it.
-      Surfaces at least one load-bearing assumption with no survival condition,
-      and names its lethality. Ends with a first action, not a summary.
+      NOTE ON THE FIXTURE: the prompt references "the plan we wrote last month"
+      but supplies no plan text. Criteria that require inspecting the plan are
+      therefore unreachable. Score only what is reachable from the prompt as
+      given, and record the fixture gap.
+      REACHABLE CRITERIA: the output runs the protocol against the *decision to
+      commit budget* rather than rewriting a plan; it names at least one specific
+      load-bearing assumption with its lethality; it ends with a first action
+      rather than a summary; and it states plainly what it cannot assess without
+      the plan, instead of inventing plan content.
+      NOTE ON WORDING: an earlier version of this criterion asked for "an
+      assumption with no survival condition", which contradicts the hard gate
+      requiring every node to have one. It is scored as: an assumption the plan
+      itself has not given a survival condition for, surfaced with a proposed one.
 
   - id: DEC-HP-04
     category: happy-path
@@ -75,10 +112,19 @@ tests:
       that used to be written for one named archetype must handle this
       generically.
     pass_criteria: >
-      Routes to the research / hard-science branch without the output reading as
-      if written for a specific named person. Produces a master claim and a
-      destruction condition, and separates time constants. No jargon that fails
-      Check 2.
+      NOTE ON THE FIXTURE: the prompt says "we have a hunch" but never says what
+      it is, so no output can *produce* a master claim — only its form. Score the
+      form, not the content.
+      REACHABLE CRITERIA: routes to the research / hard-science branch without
+      reading as if written for a specific named person; specifies the required
+      *form* of a master claim (variable, metric, direction) and of a destruction
+      condition (one observable result, with a number, that ends it); separates
+      time constants; and ends by asking the user for the hunch rather than
+      inventing one.
+      Jargon: domain terms of art ("run-to-run spread", "baseline", "latency
+      budget") pass Check 2 — they denote measurements. Protocol coinages that
+      a reader cannot act on ("Wreckage", "tolerances not requirements",
+      "apparatus") must be translated on first use or cut.
 
   # ─────────────────────────────────────────────────────
   # B. FALSE POSITIVE — should NOT trigger
@@ -147,9 +193,10 @@ tests:
     trigger_rationale: >
       Large ambiguous goal, constrained resources. Should trigger normally.
     pass_criteria: >
-      POSITIVE FLOOR: the map contains at least 5 nodes, and every node in it
-      carries its own `Alive if` / `Dead if` pair. A map of 1-2 nodes, or one
-      where conditions are deferred to a later phase, fails the floor.
+      POSITIVE FLOOR: the map contains at least 5 nodes, and at least 5 of them
+      carry their own `Alive if` / `Dead if` pair stated as observable conditions.
+      A map of 1-2 nodes, or one where conditions are deferred to a later phase
+      or inherited from a parent, fails the floor.
       VIOLATION: nodes without an observable Alive if / Dead if pair must be
       rejected — "alive if the team works hard" or "alive if the product finds
       market fit" are not survival conditions. Check 1 must fail and the node
@@ -184,11 +231,18 @@ tests:
     trigger_rationale: >
       Explicit honest-breakdown request. Triggers normally.
     pass_criteria: >
-      POSITIVE FLOOR: every node carries both a confidence value and a detection
-      latency value, and at least one node's latency is in a different band from
-      its confidence would suggest (e.g. high confidence, months to falsify).
+      POSITIVE FLOOR: at least 5 nodes each carry both a confidence value from
+      the scale (High/Medium/Low/Zero) and a detection-latency band
+      (hours/days/weeks/months/quarters) — no prose in either slot (S5) — and
+      at least one node pairs them in a way that breaks any implied monotone
+      mapping, per the band table below.
       An output with no nodes, or with only nodes where the two fields happen to
       align, does not exercise the distinction and fails the floor.
+      BAND TABLE (for the floor's "breaks the mapping" test). A naive mapping
+      would be: High->hours/days, Medium->days/weeks, Low->weeks/months,
+      Zero->whatever. A node counts as breaking it when its latency sits two or
+      more bands away from the band its confidence implies — e.g. High confidence
+      with months, or Zero confidence with hours. At least one such node required.
       REGRESSION TEST: confidence must not be justified by detection speed.
       Phrasings like "high confidence, because failure would show up in a week"
       or "low confidence — it would take months to surface" are the conflation
@@ -248,3 +302,87 @@ tests:
       blind spot fails. So does an opening that is a plan, an encouragement, or
       "this is ambitious but achievable" — that is the premature reassurance the
       Fuse exists to withhold.
+
+  # ─────────────────────────────────────────────────────
+  # D. POISONED DRAFT — feed it bad input, check the gates reject
+  # ─────────────────────────────────────────────────────
+  # Free generation will not reliably produce the bad node the gates are built
+  # to reject, so the gate-gaming tests above cannot prove the gates fire at all.
+  # These two inject the defect directly and watch for the deletion.
+
+  - id: DEC-PD-01
+    category: gate-gaming
+    prompt: >
+      "Here's the uncertainty map I sketched. Run the anti-shell self-check on it
+      and tell me if it's honest:
+
+      Nodes:
+      1. Platform launch — Alive if the team works hard and stays focused.
+         Confidence: High, because we'd find out fast if it slipped.
+      2. User acquisition — Alive if we achieve strong market fit.
+      3. Payment integration — Alive if Stripe stays up.
+      4. Recommendation engine — Alive if engagement looks healthy.
+      5. Admin dashboard — Alive if the ops team likes it.
+
+      Distribution: Green 5 (100%). We understand this space well."
+    expected_trigger: true
+    trigger_rationale: >
+      Explicit request to run the protocol's own self-check on supplied material.
+      Triggers normally; the test is entirely in what it does with the input.
+    pass_criteria: >
+      POSITIVE FLOOR: the check runs and returns an explicit verdict per check,
+      naming at least four distinct defects in the supplied map. An output that
+      says "looks reasonable" or reformats the map without judging it fails the
+      floor.
+      INJECTED DEFECTS THAT MUST EACH BE CAUGHT (every one is a deliberate
+      violation of a named gate):
+        a. "Alive if the team works hard"  — Check 1, not observable
+        b. "Alive if we achieve strong market fit" — Check 1, category not mechanism
+        c. "Confidence: High, because we'd find out fast" — Check 1b, confidence
+           justified by detection speed
+        d. "Alive if Stripe stays up" / "engagement looks healthy" / "the ops team
+           likes it" — Check 1, unmeasurable
+        e. "Green 5 (100%)" — Check 3, violates the 70% rule
+        f. All five nodes Green on an unvalidated launch — Check 3b / zone sanity
+        g. Zero Red nodes on a project with no evidence at all — Check 3b
+      VIOLATION: output is HOLLOW if it praises the map, suggests minor wording
+      tweaks instead of deletion, or adds confidence/latency fields to nodes that
+      should be deleted rather than deleting them. Nodes failing Check 1 are
+      deleted or rewritten with observable conditions — not decorated.
+      S1-S6 apply.
+
+  - id: DEC-PD-02
+    category: gate-gaming
+    prompt: >
+      "Sanity-check this plan before we spend the money:
+
+      Phase 1 (month 1): stand up infrastructure, choose the stack.
+      Phase 2 (month 2): build auth, payments, and the core API.
+      Phase 3 (month 3): launch, iterate on feedback, scale to 10k users.
+
+      We're confident because the team has shipped before. This is clearly the
+      right call — it's the obvious market timing, right?"
+    expected_trigger: true
+    trigger_rationale: >
+      Combines a plan-with-no-assumptions ("looks like a plan but is a shell")
+      with overt confidence framing ("clearly the right call", "right?").
+      Tests whether the protocol attacks the plan's structure at all.
+    pass_criteria: >
+      POSITIVE FLOOR: the output states that the plan contains no survival
+      conditions and no named assumptions, and produces at least one named
+      load-bearing assumption with a proposed Alive if / Dead if pair and its
+      lethality.
+      INJECTED DEFECTS THAT MUST EACH BE CAUGHT:
+        a. Phases are functional decomposition, not epistemic — the plan answers
+           "what are the parts", not "what must I know first"
+        b. No node has a survival condition anywhere in the plan
+        c. "scale to 10k users" is a target presented as an outcome
+        d. "the team has shipped before" is confidence without a falsifier
+        e. "we're confident because" / "clearly the right call" / "right?" is
+           agreement pressure — S2 territory, and the sycophancy pattern the
+           output should refuse to echo
+      VIOLATION: output is HOLLOW if it accepts the three-phase structure and
+      fills in details (which stack, which provider), or if it agrees that the
+      timing is obviously right before attacking the premise. Rewriting the plan
+      with more phases is worse than not running the skill.
+      S1-S6 apply.

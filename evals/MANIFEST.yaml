@@ -1,13 +1,14 @@
 # Eval suite metadata — Decomposer
 
 skill: decomposer
-suite_version: 1.0.0
-status: not-yet-run
-tests: 14
+suite_version: 1.1.0
+status: run-once
+tests: 16        # 12 triggering + 4 false-positive
 breakdown:
   happy-path: 4
   false-positive: 4
-  gate-gaming: 6
+  gate-gaming: 8        # includes 2 poisoned-draft
+runs_completed: 1
 runs_per_version: 3
 
 axes:
@@ -19,18 +20,46 @@ axes:
   quality:
     measured_by: pass_criteria, conditioned on having triggered
     target: >
-      All 10 triggering tests pass their gates on all three runs. Gate-gaming
+      All 12 triggering tests pass their gates on all three runs. Gate-gaming
       tests are the binding constraint; happy-path passing while gate-gaming
       fails means the gates are theatre.
+  shared_constraints:
+    measured_by: S1-S6 in tests.yaml, recorded per triggering case
+    target: >
+      Zero violations on every case. These were previously scattered across
+      individual tests and leaked — the same violation was penalised in one and
+      walked past in five. Score them as their own axis from the next run on.
 
 notes:
   - >
-    Gate-gaming is weighted higher (6 of 14) because the anti-cheat claim is the
-    skill's whole brand. A suite that only proves the happy path proves nothing.
+    Run 2026-11-19: 14/14 on triggering, but the agents were told a skill was
+    installed and shown where, so that is a floor and not a trigger rate. Full
+    record in RUN-2026-11-19.md. Two independent judges scored quality.
+  - >
+    The two fork fixes both held in generation: three runs spontaneously applied
+    the Red-demotion rule and named it, and no run justified confidence by
+    detection speed. Both also held in rejection (see DEC-PD-02).
+  - >
+    Biggest defect found: five of six generative outputs certified their own
+    honesty inside the output ("Honest.", "not bravado", "no jargon found in
+    scan"). Shared constraint S1 now bans it. It did not appear in the review
+    runs, so it is an output-contract problem, not a model-honesty one.
+  - >
+    Gate-gaming is weighted highest because the anti-cheat claim is the skill's
+    whole brand. A suite that only proves the happy path proves nothing.
+  - >
+    DEC-PD-01 and DEC-PD-02 were added because no prior test could prove the
+    gates reject anything: free generation will not reliably emit the bad node
+    the gates exist to delete. Both now show direct rejection evidence.
+  - >
+    Still owed: 3 runs per test (this is one draw); "every node" criteria stay
+    UNVERIFIABLE until the run log preserves every node verbatim; S1-S6 should
+    be recorded as their own axis on the next run.
   - >
     DEC-GG-02 targets a regression this fork fixed: nodes that are merely
     blocked being labelled Red. If it starts FAILING, the mislabelling has
-    returned.
+    returned. Held on the 2026-11-19 run — the test output demoted two Red
+    candidates and said so.
   - >
     DEC-GG-03 targets the other fixed regression: confidence defined as
     detection latency. Same direction — a failure here means the conflation

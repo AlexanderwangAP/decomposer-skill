@@ -68,7 +68,17 @@ Neither fix changes the protocol's shape. Both change what it outputs.
 
 ## Status
 
-The protocol is a heuristic, not a validated method. Upstream said so in its own manifesto, and it is still true here. The `evals/` directory holds 14 tests across happy-path, false-positive, and gate-gaming categories — the gate-gaming cases are the binding ones, because an anti-cheat claim is only worth as much as its hardest test. None of it has been run against a real agent yet. `status: not-yet-run` is not a euphemism.
+The protocol is a heuristic, not a validated method. Upstream said so in its own manifesto, and it is still true here.
+
+The `evals/` directory holds **16 tests** across happy-path, false-positive, and gate-gaming categories. Two of them are poisoned-draft tests that inject a deliberately bad node and watch the gates delete it. The gate-gaming cases are the binding ones — an anti-cheat claim is only worth as much as its hardest test.
+
+**They have been run once** (2026-11-19). Full record in [`evals/RUN-2026-11-19.md`](evals/RUN-2026-11-19.md), scored by two independent judges.
+
+What the run showed: triggering was correct on all 14 cases, though the agents knew a skill was installed, so that is a floor rather than a real trigger rate. Both fork fixes held in generation *and* in rejection. The gates deleted every injected defect in the poisoned-draft tests.
+
+What it also showed, and is worth knowing before you rely on this: **five of six generative outputs certified their own honesty inside the output** — "Honest.", "not bravado", "no jargon found in scan". The gates stop hollow output; they did not stop an output announcing it had passed. That is now banned by shared constraint S1, but it is the clearest thing this skill gets wrong.
+
+One draw is not three. Treat the numbers accordingly.
 
 The useful framing, inherited from upstream and correct: this is a red-teaming tool for plans. Its value is in catching bad plans, not producing good ones.
 
@@ -90,7 +100,8 @@ decomposer/
 │   └── verify.py                 checks that the claims below actually hold
 ├── evals/
 │   ├── MANIFEST.yaml             suite metadata
-│   └── tests.yaml                14 tests
+│   ├── tests.yaml                16 tests, incl. 2 poisoned-draft
+│   └── RUN-2026-11-19.md         the first full run: outputs, scores, defects
 └── references/
     ├── ANTI_SHELL_CHECKLIST.md   the checks, with recovery steps
     ├── PROBE_TOOLKIT.md          how to find unknown unknowns
@@ -119,7 +130,7 @@ python3 tools/verify.py
 
 It exits non-zero if any claim fails: frontmatter parses, every referenced file resolves, the evals are well-formed with positive floors on the gate-gaming cases, none of the corrected wording has crept back in, the detection-latency scale is uniform across files, the upstream copyright and MIT grant survive, and everything CHANGELOG lists as removed is actually gone. Wire it into CI if you like.
 
-It does not test whether the protocol works. That is what `evals/` is for, and as of this writing those are unrun.
+It does not test whether the protocol works. That is what `evals/` is for.
 
 ## License
 
