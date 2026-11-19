@@ -101,12 +101,26 @@ else: good(f"detection-latency scale uniform ({list(scales)[0]}/quarters)")
 
 _mark = len(FAILS)
 lic = open("LICENSE", encoding="utf-8").read()
-if "Copyright (c) 2026 CeaserZhao" not in lic: bad("upstream copyright line missing")
+if "Copyright (c) 2026 CeaserZhao" not in lic: bad("upstream copyright line missing from LICENSE")
 if "Permission is hereby granted" not in lic: bad("MIT grant text missing")
+if "THE SOFTWARE IS PROVIDED" not in lic: bad("MIT warranty disclaimer missing")
+# LICENSE must stay verbatim: GitHub's licence detector gives up on the whole file
+# if anything is inserted between the copyright line and the grant text.
+if "derivative" in lic.lower() or "zbbsdsb" in lic: bad("LICENSE has been edited; keep it verbatim and put attribution in NOTICE.md")
+
+notice = ""
+if not os.path.exists("NOTICE.md"): bad("NOTICE.md missing — derivative attribution has nowhere to live")
+else: notice = open("NOTICE.md", encoding="utf-8").read()
+for needle, why in [("CeaserZhao", "upstream author not credited"),
+                    ("zbbsdsb/Fundemetal", "upstream repository not linked"),
+                    ("derivative", "derivative status not stated")]:
+    if needle not in notice: bad(f"NOTICE.md: {why}")
+
 rd = open("README.md", encoding="utf-8").read()
 if "zbbsdsb/Fundemetal" not in rd: bad("README lacks upstream link")
 if "fork" not in rd.lower(): bad("README does not declare derivative status")
-good("attribution intact: upstream copyright, MIT grant, README declares a fork", _mark)
+if "NOTICE.md" not in rd: bad("README does not point at NOTICE.md")
+good("attribution intact: verbatim MIT + upstream copyright, NOTICE.md credits the original, README declares a fork", _mark)
 
 _mark = len(FAILS)
 for f in ["CONTRIBUTING.md", "adapters", "assets"]:

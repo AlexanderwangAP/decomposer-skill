@@ -79,7 +79,8 @@ decomposer/
 ├── .gitignore                    repo plumbing
 ├── SKILL.md                      entry point, YAML frontmatter, executable core
 ├── PROTOCOL.md                   full specification and worked example
-├── LICENSE                       MIT; original copyright © CeaserZhao retained
+├── LICENSE                       standard MIT, reproduced verbatim from upstream
+├── NOTICE.md                     attribution: this is a derivative work
 ├── MANIFEST.md                   why it exists (a sales pitch; the protocol is in PROTOCOL.md)
 ├── MANIFEST.yaml                 machine-readable metadata
 ├── CHANGELOG.md                  what this fork changed and why
@@ -122,6 +123,8 @@ It does not test whether the protocol works. That is what `evals/` is for, and a
 
 ## License
 
-MIT. See [LICENSE](LICENSE). Original work © CeaserZhao; this fork retains that notice and adds its own.
+MIT. See [LICENSE](LICENSE) — the standard text, reproduced verbatim from upstream with CeaserZhao's original copyright notice intact, as the licence requires.
+
+Attribution for the derivative work lives in [NOTICE.md](NOTICE.md), kept separate from the licence so that GitHub and other tooling can still recognise the licence unambiguously.
 
 If you publish something built on this, link upstream. That is all the original asked for.

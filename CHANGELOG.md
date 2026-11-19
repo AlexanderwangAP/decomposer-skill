@@ -87,6 +87,7 @@ An independent pass over this fork found the following, all corrected here:
 
 ### Added
 
+- `NOTICE.md` — attribution for the derivative work. It lives here rather than in `LICENSE` because the first attempt wedged a derivative notice between the copyright line and the grant text, which made GitHub's licence detector give up and report `NOASSERTION` instead of MIT. `LICENSE` is now the standard text verbatim, so the licence is unambiguous to tooling, and the credit is one click away in `NOTICE.md`.
 - `tools/verify.py` — a script that checks this file's claims rather than asserting them: frontmatter validity, referenced-file resolution, eval structure, absence of resurrected wording, uniform detection-latency scale, intact upstream attribution, and that everything listed under "Removed" is genuinely gone. Exits non-zero on failure. It does not test whether the protocol works; that is what `evals/` is for.
 
 ### Removed
