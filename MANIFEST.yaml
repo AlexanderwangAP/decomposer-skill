@@ -1,0 +1,62 @@
+# Skill manifest — Decomposer
+#
+# Forked from Fundemetal (zbbsdsb/Fundemetal), skill "decomposer".
+# Original author: CeaserZhao. MIT. See LICENSE and README.md for attribution.
+
+name: Decomposer
+slug: decomposer
+type: cognitive-protocol
+tagline: Surface the unknown unknowns before anything gets built
+summary: >
+  A five-step protocol that turns "I don't know what I don't know" into
+  actionable known unknowns. The output is an uncertainty map with survival
+  conditions — not a plan, not a module list.
+entry: SKILL.md
+format: >
+  Progressive disclosure. SKILL.md carries the executable core; PROTOCOL.md
+  carries the full specification and is read on demand. The root SKILL.md
+  carries valid YAML frontmatter so a host agent can discover and load it.
+
+metrics:
+  - honesty
+  - actionability
+
+checks:
+  - survival condition present on every node
+  - confidence and detection latency recorded separately
+  - no untranslatable jargon
+  - yellow + red >= 30%
+  - zone sanity: every red node is genuinely unformulable
+  - at least one explicit "I don't know"
+  - one-sentence first action
+
+grounding:
+  - Rumsfeld known knowns / known unknowns / unknown unknowns
+  - Luft & Ingham, Johari window (1955)
+  - Beyer et al., Site Reliability Engineering (2016) — error budgets
+  - Boehm, Software Engineering Economics (1981) — Wideband Delphi
+  - Cynefin (ordered vs complex)
+
+files:
+  protocol: PROTOCOL.md
+  checklist: references/ANTI_SHELL_CHECKLIST.md
+  probes: references/PROBE_TOOLKIT.md
+  positions: references/COGNITIVE_POSITIONS.md
+  scale: references/SCALE_GUIDE.md
+  pitfalls: references/COMMON_PITFALLS.md
+  contexts: references/OUTPUT_CONTEXTS.md
+  quickref: references/QUICK_REFERENCE_CARD.md
+  tutorial: references/TUTORIAL.md
+  evals: evals/
+
+tags:
+  - unknown-unknowns
+  - decomposition
+  - cognitive-honesty
+  - pre-mortem
+  - red-teaming
+  - planning
+
+license: MIT
+upstream: https://github.com/zbbsdsb/Fundemetal
+upstream_author: CeaserZhao

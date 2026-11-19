@@ -1,0 +1,42 @@
+# Eval suite metadata — Decomposer
+
+skill: decomposer
+suite_version: 1.0.0
+status: not-yet-run
+tests: 14
+breakdown:
+  happy-path: 4
+  false-positive: 4
+  gate-gaming: 6
+runs_per_version: 3
+
+axes:
+  triggering:
+    measured_by: expected_trigger across all categories
+    target: >
+      4/4 happy-path fire, 0/4 false-positive fire. Anything else means the
+      description is miscalibrated — fix the description, not the protocol body.
+  quality:
+    measured_by: pass_criteria, conditioned on having triggered
+    target: >
+      All 10 triggering tests pass their gates on all three runs. Gate-gaming
+      tests are the binding constraint; happy-path passing while gate-gaming
+      fails means the gates are theatre.
+
+notes:
+  - >
+    Gate-gaming is weighted higher (6 of 14) because the anti-cheat claim is the
+    skill's whole brand. A suite that only proves the happy path proves nothing.
+  - >
+    DEC-GG-02 targets a regression this fork fixed: nodes that are merely
+    blocked being labelled Red. If it starts FAILING, the mislabelling has
+    returned.
+  - >
+    DEC-GG-03 targets the other fixed regression: confidence defined as
+    detection latency. Same direction — a failure here means the conflation
+    is back. These two tests are the change-log made testable.
+  - >
+    LLM-as-judge has its own agreement bias. Prefer mechanically checkable
+    gates (count of nodes with survival conditions, presence of a first action,
+    presence of a confidence+latency pair) over "feels right" scoring. Where
+    semantic judgement is unavoidable, use three judges and majority vote.

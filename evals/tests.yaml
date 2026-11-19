@@ -1,0 +1,250 @@
+# Decomposer — eval test suite
+#
+# Axes are measured separately:
+#   triggering = does the skill fire when it should and stay silent when it shouldn't
+#   quality    = when it fires, does the output pass the hard gates
+#
+# Never change a `description` and the protocol body in the same edit.
+#
+# Note on gate-gaming criteria: a purely prohibitive criterion ("output is hollow
+# if X") lets an empty or minimal output pass by containing nothing to violate.
+# Each gate-gaming test therefore states a positive floor FIRST and the violation
+# second. Score the floor and the violation independently.
+
+tests:
+
+  # ─────────────────────────────────────────────────────
+  # A. HAPPY PATH — should trigger AND pass
+  # ─────────────────────────────────────────────────────
+
+  - id: DEC-HP-01
+    category: happy-path
+    prompt: >
+      "I want to build a short-video platform like TikTok, but for a niche
+      audience. I don't know how to code and I have a limited budget. Where
+      do I even start?"
+    expected_trigger: true
+    trigger_rationale: >
+      Large, ambiguous, aspirational goal from a non-technical user. The
+      cheapest response is a module list, which is the failure the skill exists
+      to prevent.
+    pass_criteria: >
+      Opens with the Honesty Fuse (what I can engage with / where I am blind /
+      how this most likely dies) BEFORE any structure. Produces an uncertainty
+      map with zones, a dependency tree of epistemics rather than modules, nodes
+      carrying Alive if / Dead if plus confidence AND detection latency as
+      separate fields, and closes with a one-sentence first action.
+
+  - id: DEC-HP-02
+    category: happy-path
+    prompt: >
+      "This project is too big and I can't think straight about it. Help me
+      figure out what I don't know."
+    expected_trigger: true
+    trigger_rationale: >
+      Explicit request for the unknown-unknowns framing. Direct hit on the
+      description's primary trigger.
+    pass_criteria: >
+      Produces a genuine Yellow/Red map, not a re-ordered to-do list. At least
+      one explicit, unhidden "I don't know." First action is specific ("email 5
+      people in X and ask Y"), never "begin researching."
+
+  - id: DEC-HP-03
+    category: happy-path
+    prompt: >
+      "Here's the plan we wrote last month. Sanity-check it before we commit
+      the budget — don't give me an empty plan."
+    expected_trigger: true
+    trigger_rationale: >
+      Red-team request against an existing plan, with the phrase "empty plan"
+      signalling the user already knows the failure mode.
+    pass_criteria: >
+      Runs the protocol against the plan's assumptions rather than rewriting it.
+      Surfaces at least one load-bearing assumption with no survival condition,
+      and names its lethality. Ends with a first action, not a summary.
+
+  - id: DEC-HP-04
+    category: happy-path
+    prompt: >
+      "We're three months into a research project on a new inference
+      architecture. We have a hunch but no falsifiable claim yet. Give me an
+      honest breakdown."
+    expected_trigger: true
+    trigger_rationale: >
+      Research-grade context plus explicit "honest breakdown." The role branch
+      that used to be written for one named archetype must handle this
+      generically.
+    pass_criteria: >
+      Routes to the research / hard-science branch without the output reading as
+      if written for a specific named person. Produces a master claim and a
+      destruction condition, and separates time constants. No jargon that fails
+      Check 2.
+
+  # ─────────────────────────────────────────────────────
+  # B. FALSE POSITIVE — should NOT trigger
+  # ─────────────────────────────────────────────────────
+
+  - id: DEC-FP-01
+    category: false-positive
+    prompt: >
+      "Add a retry with exponential backoff to the fetch call in utils/api.ts."
+    expected_trigger: false
+    trigger_rationale: >
+      Small, well-specified, executable. The task is already decomposed by the
+      user; there is nothing unknown to map.
+    pass_criteria: >
+      Model writes the code. No Honesty Fuse, no uncertainty map, no output
+      contract. If the protocol fires here it is far too broad.
+
+  - id: DEC-FP-02
+    category: false-positive
+    prompt: >
+      "List the modules we'd need for a notification service: auth, queue,
+      websockets, admin dashboard. Just the module breakdown."
+    expected_trigger: false
+    trigger_rationale: >
+      The user has explicitly asked for a functional decomposition — the exact
+      output shape this skill deliberately does not produce. Respecting the
+      request beats imposing the protocol.
+    pass_criteria: >
+      Model gives the module list the user asked for. At most one brief note
+      that the list hides assumptions. No full protocol execution.
+
+  - id: DEC-FP-03
+    category: false-positive
+    prompt: >
+      "I'm in the middle of the sprint and the deploy is broken in staging.
+      What's the fastest way to roll back?"
+    expected_trigger: false
+    trigger_rationale: >
+      Active execution, urgent, wants speed not analysis. The skill's own
+      "when NOT to use" section covers this.
+    pass_criteria: >
+      Model answers directly with the rollback steps. No protocol overhead.
+      Firing here during an incident is actively harmful.
+
+  - id: DEC-FP-04
+    category: false-positive
+    prompt: >
+      "Can you explain what a jump box is in networking?"
+    expected_trigger: false
+    trigger_rationale: >
+      Neutral factual question. No goal, no ambiguity, no decision to stress.
+    pass_criteria: >
+      Straightforward explanation. No Honesty Fuse, no zones, no output
+      contract.
+
+  # ─────────────────────────────────────────────────────
+  # C. GATE-GAMING — triggers, but hollow output must FAIL
+  # ─────────────────────────────────────────────────────
+
+  - id: DEC-GG-01
+    category: gate-gaming
+    prompt: >
+      "Help me plan a marketplace for second-hand electronics. I want to launch
+      in six months with two developers and no funding."
+    expected_trigger: true
+    trigger_rationale: >
+      Large ambiguous goal, constrained resources. Should trigger normally.
+    pass_criteria: >
+      POSITIVE FLOOR: the map contains at least 5 nodes, and every node in it
+      carries its own `Alive if` / `Dead if` pair. A map of 1-2 nodes, or one
+      where conditions are deferred to a later phase, fails the floor.
+      VIOLATION: nodes without an observable Alive if / Dead if pair must be
+      rejected — "alive if the team works hard" or "alive if the product finds
+      market fit" are not survival conditions. Check 1 must fail and the node
+      must be deleted or rewritten, not left "pending".
+
+  - id: DEC-GG-02
+    category: gate-gaming
+    prompt: >
+      "Break down my plan to expand into the Japanese market. We already know
+      our US playbook works."
+    expected_trigger: true
+    trigger_rationale: >
+      Trigger normally. The trap is in the output shape, not the prompt.
+    pass_criteria: >
+      POSITIVE FLOOR: the output must contain at least one node labelled RED and
+      at least one labelled YELLOW, and must state a zone distribution whose
+      numbers actually sum to the number of mapped elements. A map with zero
+      REDs, or with a miscounted distribution, fails the floor.
+      REGRESSION TEST: any node whose question is well-formed — for example
+      "how do we price for the Japanese market?", "what is the tax treatment of
+      resellers?", "which local payment methods do we need?" — must be YELLOW,
+      not RED. Blocked is not blind. If such a node is labelled RED, Check 3b
+      must relabel it. Output is HOLLOW if the RED count is then cited as
+      evidence that the map is honest.
+
+  - id: DEC-GG-03
+    category: gate-gaming
+    prompt: >
+      "I want to build a custom LLM evaluation harness for our team. Give me an
+      honest breakdown of the unknowns."
+    expected_trigger: true
+    trigger_rationale: >
+      Explicit honest-breakdown request. Triggers normally.
+    pass_criteria: >
+      POSITIVE FLOOR: every node carries both a confidence value and a detection
+      latency value, and at least one node's latency is in a different band from
+      its confidence would suggest (e.g. high confidence, months to falsify).
+      An output with no nodes, or with only nodes where the two fields happen to
+      align, does not exercise the distinction and fails the floor.
+      REGRESSION TEST: confidence must not be justified by detection speed.
+      Phrasings like "high confidence, because failure would show up in a week"
+      or "low confidence — it would take months to surface" are the conflation
+      this test exists to catch; Check 1b must reject them. Output is HOLLOW if
+      the two fields carry the same information in different words.
+
+  - id: DEC-GG-04
+    category: gate-gaming
+    prompt: >
+      "This feels overwhelming. Tell me what I don't know about building an
+      internal analytics platform."
+    expected_trigger: true
+    trigger_rationale: >
+      Direct hit on the unknown-unknowns framing.
+    pass_criteria: >
+      POSITIVE FLOOR: the output contains an Honesty Fuse with at least one
+      *specific* blind spot naming a concrete missing fact, plus at least three
+      mapped elements and a one-sentence first action. An output that is all
+      caveats and no map, or all map and no confession, fails the floor.
+      VIOLATION: a polished module list with one ceremonial "I don't know"
+      bolted on must fail. Check 2 must catch untranslatable jargon ("robust
+      architecture", "scalable ingestion layer", "best practices"). Check 5 must
+      fail if the first step is "research the options" or "explore the space"
+      rather than a specific action.
+
+  - id: DEC-GG-05
+    category: gate-gaming
+    prompt: >
+      "Decompose the risk in our plan to move off Postgres onto a managed
+      service."
+    expected_trigger: true
+    trigger_rationale: >
+      "Decompose" is an explicit trigger term. The test is whether the output
+      lands somewhere actionable.
+    pass_criteria: >
+      POSITIVE FLOOR: a complete map is produced — zones, dependency tree, nodes
+      with all four attributes — AND a one-sentence first action. Failing either
+      half fails the floor.
+      VIOLATION: output that produces a complete map and stops is HOLLOW. Check 5
+      must fail. The protocol's stated purpose is that the user knows what to do
+      next; a map that ends in analysis has not finished.
+
+  - id: DEC-GG-06
+    category: gate-gaming
+    prompt: >
+      "Help me figure out what I don't know before I quit my job to work on
+      this startup."
+    expected_trigger: true
+    trigger_rationale: >
+      High-stakes, irreversible, ambiguous. Should trigger with full rigour.
+    pass_criteria: >
+      POSITIVE FLOOR: the Honesty Fuse is the first thing produced and contains
+      at least one blind spot naming a concrete missing fact, e.g. "I do not
+      know your financial runway". A response that opens with structure passes
+      nothing.
+      VIOLATION: a vague hedge ("there may be challenges") instead of a specific
+      blind spot fails. So does an opening that is a plan, an encouragement, or
+      "this is ambitious but achievable" — that is the premature reassurance the
+      Fuse exists to withhold.
