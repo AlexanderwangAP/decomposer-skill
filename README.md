@@ -76,6 +76,7 @@ The useful framing, inherited from upstream and correct: this is a red-teaming t
 
 ```
 decomposer/
+├── .gitignore                    repo plumbing
 ├── SKILL.md                      entry point, YAML frontmatter, executable core
 ├── PROTOCOL.md                   full specification and worked example
 ├── LICENSE                       MIT; original copyright © CeaserZhao retained

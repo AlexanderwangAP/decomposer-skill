@@ -8,9 +8,15 @@ import re, os, sys, yaml
 from collections import Counter
 
 ok = True
+FAILS = []
 def bad(m):
-    global ok; ok = False; print("  FAIL:", m)
-def good(m): print("  ok  :", m)
+    global ok; ok = False; FAILS.append(m); print("  FAIL:", m)
+def good(m, since=None):
+    """Print an 'ok' line only if no failure occurred since `since` (a len(FAILS) snapshot).
+    Unconditional 'ok' lines after a FAIL are how a check suite starts lying."""
+    if since is not None and len(FAILS) != since:
+        return
+    print("  ok  :", m)
 
 src = open("SKILL.md", encoding="utf-8").read()
 fm = yaml.safe_load(re.match(r"^---\n(.*?)\n---\n", src, re.S).group(1))
@@ -31,6 +37,7 @@ if miss: bad(f"SKILL.md references missing files: {miss}")
 else: good(f"{len(refs)} files referenced from SKILL.md all exist")
 
 n = 0
+_mark = len(FAILS)
 for root, _, files in os.walk("."):
     for fn in files:
         if not fn.endswith(".md"): continue
@@ -42,8 +49,9 @@ for root, _, files in os.walk("."):
             n += 1
             if not os.path.exists(os.path.normpath(os.path.join(root, t2))):
                 bad(f"{p}: dead link {tg}")
-good(f"{n} markdown links resolve")
+good(f"{n} markdown links resolve", _mark)
 
+_mark = len(FAILS)
 tests = yaml.safe_load(open("evals/tests.yaml", encoding="utf-8"))["tests"]
 if len({t["id"] for t in tests}) != len(tests): bad("duplicate test ids")
 c = Counter(t["category"] for t in tests)
@@ -55,7 +63,7 @@ for t in tests:
 gg = [t for t in tests if t["category"] == "gate-gaming"]
 nofloor = [t["id"] for t in gg if "POSITIVE FLOOR" not in t["pass_criteria"]]
 if nofloor: bad(f"gate-gaming tests without a positive floor: {nofloor}")
-good(f"{len(tests)} tests {dict(c)}; all {len(gg)} gate-gaming tests state a positive floor")
+good(f"{len(tests)} tests {dict(c)}; all {len(gg)} gate-gaming tests state a positive floor", _mark)
 
 BANNED = [
     ("MIT Scholar", "the archetype this fork generalised"),
@@ -70,6 +78,7 @@ BANNED = [
     ("That is all it promises", "the old overclaiming close"),
     ("MEASUREMENT framework", "reference to a file not shipped here"),
 ]
+_mark = len(FAILS)
 for root, _, files in os.walk("."):
     for fn in files:
         if not fn.endswith((".md", ".yaml")): continue
@@ -78,7 +87,7 @@ for root, _, files in os.walk("."):
         t = open(p, encoding="utf-8").read()
         for pat, msg in BANNED:
             if pat in t: bad(f"{p}: {msg} -> {pat!r}")
-good("no resurrected old wording outside CHANGELOG.md")
+good("no resurrected old wording outside CHANGELOG.md", _mark)
 
 scales = set()
 for root, _, files in os.walk("."):
@@ -90,23 +99,25 @@ for root, _, files in os.walk("."):
 if len(scales) != 1: bad(f"detection-latency scale differs across files: {scales}")
 else: good(f"detection-latency scale uniform ({list(scales)[0]}/quarters)")
 
+_mark = len(FAILS)
 lic = open("LICENSE", encoding="utf-8").read()
 if "Copyright (c) 2026 CeaserZhao" not in lic: bad("upstream copyright line missing")
 if "Permission is hereby granted" not in lic: bad("MIT grant text missing")
 rd = open("README.md", encoding="utf-8").read()
 if "zbbsdsb/Fundemetal" not in rd: bad("README lacks upstream link")
 if "fork" not in rd.lower(): bad("README does not declare derivative status")
-good("attribution intact: upstream copyright, MIT grant, README declares a fork")
+good("attribution intact: upstream copyright, MIT grant, README declares a fork", _mark)
 
+_mark = len(FAILS)
 for f in ["CONTRIBUTING.md", "adapters", "assets"]:
     if os.path.exists(f): bad(f"CHANGELOG claims this was removed, but it is present: {f}")
-good("everything CHANGELOG lists as removed is actually gone")
+good("everything CHANGELOG lists as removed is actually gone", _mark)
 
 tree = set(re.findall(r"[├└]── ([A-Za-z0-9_./*-]+)", rd))
 real_top = {f for r, _, fs in os.walk(".") for f in fs if r == "."}
-miss = [f for f in sorted(real_top) if f not in tree and f not in ("README.md", "tools_verify.py")]
+miss = [f for f in sorted(real_top) if f not in tree and f != "README.md"]
 if miss: bad(f"README tree omits: {miss}")
-good("README tree covers every top-level file")
+else: good("README tree covers every top-level file")
 
 print(f"\n  SKILL.md {len(src)} bytes | repo {sum(os.path.getsize(os.path.join(r,f)) for r,_,fs in os.walk('.') for f in fs)} bytes")
 print("RESULT:", "all claims hold" if ok else "see failures above")
