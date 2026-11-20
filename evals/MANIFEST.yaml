@@ -1,14 +1,14 @@
 # Eval suite metadata — Decomposer
 
 skill: decomposer
-suite_version: 1.1.0
-status: run-once
+suite_version: 1.2.0
+status: run-3x
 tests: 16        # 12 triggering + 4 false-positive
 breakdown:
   happy-path: 4
   false-positive: 4
   gate-gaming: 8        # includes 2 poisoned-draft
-runs_completed: 1
+runs_completed: 3
 runs_per_version: 3
 
 axes:
@@ -52,9 +52,14 @@ notes:
     gates reject anything: free generation will not reliably emit the bad node
     the gates exist to delete. Both now show direct rejection evidence.
   - >
-    Still owed: 3 runs per test (this is one draw); "every node" criteria stay
-    UNVERIFIABLE until the run log preserves every node verbatim; S1-S6 should
-    be recorded as their own axis on the next run.
+    2026-11-20: three runs per test complete (48 runs total). Triggering 48/48
+    under the priming caveat; poisoned-draft caught every injected defect on
+    every run; self-certification 0 of 22 generative runs since the fix.
+  - >
+    Still owed: real trigger rate on unprimed users (this harness primes them);
+    "every node" criteria stay UNVERIFIABLE without full node text; Red-labelling
+    unevenness survives 3b; and the skill's language rule is still ambiguous —
+    the third round pinned it in the test fixture, not in the skill.
   - >
     DEC-GG-02 targets a regression this fork fixed: nodes that are merely
     blocked being labelled Red. If it starts FAILING, the mislabelling has

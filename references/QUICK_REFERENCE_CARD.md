@@ -51,10 +51,10 @@ Confidence and detection latency are **not** the same field. High confidence + m
 | 1 | Does every node have its own observable survival condition? (Inheriting from a parent does not count.) | / |
 | 1b | Does every node carry confidence **and** detection latency, neither standing in for the other? | / |
 | 2 | Any jargon that cannot be translated to an action or a measurement? | / |
-| 3 | Is YELLOW + RED at least 30% of nodes? | / |
+| 3 | Is YELLOW + RED at least 30% — and does the stated count match the listed elements? | / |
 | 3b | For every RED node, can you state the question? If yes → relabel YELLOW. | / |
 | 4 | Is there at least one plain, unhedged "I don't know"? | / |
-| 5 | Is the first concrete action one sentence, and specific? | / |
+| 5 | Is the first concrete action one sentence, specific, and the LAST line of the output? | / |
 
 Failure → return to the step named in `../references/ANTI_SHELL_CHECKLIST.md`, correct, re-run all checks.
 
@@ -74,6 +74,18 @@ NODES
 FIRST ACTION           one sentence, specific, startable today
 ```
 
+## Node schema — uniform, Red included
+
+```
+confidence:        High | Medium | Low | Zero
+detection latency: hours | days | weeks | months | quarters | unknown
+lethality:         <named nodes> | unknown
+```
+
+`unknown` is the only sanctioned "I can't fill this in". Prose in a value slot
+(`"you have this number, I don't"`, `无法定价`) breaks the field. `Zero` and `Low`
+differ: Low has a story, Zero has nothing.
+
 ## Hard gates — reject if
 
 - modules or features appear before step 1 is done;
@@ -81,7 +93,12 @@ FIRST ACTION           one sentence, specific, startable today
 - confidence is present without detection latency, or vice versa;
 - a formulable question is labelled RED;
 - jargon survives Check 2;
-- the output ends without a one-sentence first action.
+- the output ends without a one-sentence first action;
+- anything at all follows the first action — including a sentence certifying the
+  output's own honesty ("Honest.", "not bravado", "no jargon found in scan");
+- the stated element count disagrees with the elements listed;
+- prose sits in a confidence or latency value slot;
+- the output switches language partway through.
 
 ## Skip it when
 

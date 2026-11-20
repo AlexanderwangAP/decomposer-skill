@@ -72,13 +72,13 @@ The protocol is a heuristic, not a validated method. Upstream said so in its own
 
 The `evals/` directory holds **16 tests** across happy-path, false-positive, and gate-gaming categories. Two of them are poisoned-draft tests that inject a deliberately bad node and watch the gates delete it. The gate-gaming cases are the binding ones — an anti-cheat claim is only worth as much as its hardest test.
 
-**They have been run once** (2026-11-19). Full record in [`evals/RUN-2026-11-19.md`](evals/RUN-2026-11-19.md), scored by two independent judges.
+**They have been run three times each** (2026-11-19 and 19-20) — 48 runs, meeting the suite's own 3-per-test target. Full record in [`evals/RUN-2026-11-19.md`](evals/RUN-2026-11-19.md), scored by two independent judges.
 
-What the run showed: triggering was correct on all 14 cases, though the agents knew a skill was installed, so that is a floor rather than a real trigger rate. Both fork fixes held in generation *and* in rejection. The gates deleted every injected defect in the poisoned-draft tests.
+What the runs showed: triggering was correct on 48 of 48, though the agents knew a skill was installed, so that is a floor rather than a real trigger rate. Both fork fixes held across all three rounds, in generation *and* in rejection. The gates deleted every injected defect in the poisoned-draft tests, on every round.
 
 What it also showed, and is worth knowing before you rely on this: **five of six generative outputs certified their own honesty inside the output** — "Honest.", "not bravado", "no jargon found in scan". The gates stop hollow output; they did not stop an output announcing it had passed. That is now banned by shared constraint S1, but it is the clearest thing this skill gets wrong.
 
-One draw is not three. Treat the numbers accordingly.
+What these runs cannot show: the trigger rate against unprimed users, and behaviour on prompts outside these sixteen. Both need a rig this harness does not have.
 
 The useful framing, inherited from upstream and correct: this is a red-teaming tool for plans. Its value is in catching bad plans, not producing good ones.
 

@@ -65,10 +65,14 @@ not in the node.
 1. Every node has its own observable survival condition. Inheriting from a parent node does not count — a node that borrows its condition has not been understood.
    **1b.** Every node records both confidence and detection latency, and neither stands in for the other. "High confidence because failure would show up fast" is a latency claim wearing confidence's name.
 2. No untranslatable jargon ("best practices", "robust", "scalable", "synergy").
-3. Yellow + Red ≥ 30% of nodes.
-   **3b.** For each Red node, say the question out loud. If a well-formed question comes out, it is Yellow and must be relabelled. Red is not a badge of rigour.
+3. Yellow + Red ≥ 30% of nodes. **And the count must reconcile**: stated element
+   total equals the number of elements actually listed, and the zone percentages
+   are computed against that same total. Recount out loud before writing the
+   percentages — a map that says "18 elements" and lists 16 has failed.
+   **3b.** For each Red node, say the question out loud. If a well-formed question comes out, it is Yellow and must be relabelled. Red is not a badge of rigour. "What the first N conversations reveal that I have not thought to ask" is Red — the residual, not the topic. "Which definition conflicts exist in this org, and how deep they run" is Yellow — plain question, unknown answer. If you can conjugate it into a question someone could answer, it is Yellow.
 4. At least one explicit, unhidden "I don't know".
 5. The first concrete step is one sentence — a specific action, not "research".
+   It is also the last line: nothing follows it.
 
 ## Output contract
 
@@ -90,14 +94,68 @@ FIRST ACTION
   <one sentence, specific, can start today>
 ```
 
+**The output ends at FIRST ACTION.** Nothing follows it — no summary, no
+closing thought, and above all no sentence certifying that the output is honest
+or compliant. "Honest.", "not bravado", "no jargon found in scan", "this is the
+first thing produced", "I'd rather have one honest Red than three dramatic ones"
+are all rejected. Compliance should leave traces, not declarations; a receipt of
+compliance is not compliance. If you are tempted to add one, that is the signal
+to stop.
+
+**One language throughout.** Pick the user's language and stay in it. Do not
+switch mid-output.
+
+### The node schema is uniform
+
+Every node — Green, Yellow, and Red alike — carries the same five fields. Red is
+not exempt. The treatment of Red nodes has drifted in practice (some runs give
+them no attributes at all, some give probe conditions, some refuse a field
+outright); this is the rule: **a Red node gets the same schema, and where a field
+is genuinely unknowable it is marked, not left blank and not filled with prose.**
+
+```
+confidence:           High | Medium | Low | Zero
+detection latency:    hours | days | weeks | months | quarters | unknown
+lethality:            <named nodes> | unknown
+```
+
+`unknown` is the only sanctioned value for "I cannot fill this in", and it is
+available for detection latency and lethality **but not for confidence**. There
+is no `unknown` confidence. If you have no basis for a confidence judgement, the
+answer is `Zero` — that is exactly what Zero means, and using `unknown` there
+just renames it and breaks the band.
+
+Writing `confidence: "you have this number, I don't"` or
+`detection latency: 无法定价` is prose in a value slot and breaks the field. Nor
+may you append a justification to a value — `confidence: unknown — this is a
+number on your books, not a guess I can make` is prose wearing a value's
+clothes. Put the reason in a sentence outside the schema.
+
+**Confidence has exactly four bands and they are not interchangeable.**
+- `High` — direct evidence, or a strong prior from close analogues.
+- `Medium` — indirect evidence; plausible, with a named way it fails.
+- `Low` — a guess with a story attached; you would not be surprised either way.
+- `Zero` — no basis at all. You are filling in a blank.
+
+`Zero` and `Low` differ: Low has a story, Zero has nothing. If you find yourself
+using both for nodes with the same evidence base, pick one and use it.
+
 ## Hard gates — reject output that
 
 - lists modules or features before step 1 is complete;
-- contains any node without a survival condition;
+- contains any node without a survival condition, Red included;
 - states a confidence without a detection latency (or vice versa);
 - classifies a node as Red when the question is actually formulable — that is
   Yellow, and calling it Red inflates the honesty signal;
+- puts prose in a confidence or latency value slot instead of a value or `unknown`;
+- cites the number of Red nodes as evidence about the map's honesty — whether
+  as a boast ("only one honest Red, not three dramatic ones") or as a defence
+  against an imagined accusation ("labelling more of this Red would be
+  theatre"). Both argue from the count. The count is not an argument; the zone
+  rules are, and they are already stated;
 - contains jargon that cannot be translated to an action or measurement;
+- switches language partway through;
+- has anything at all after the first action;
 - ends without a one-sentence first action.
 
 ## Scale

@@ -58,7 +58,9 @@ For each node missing confidence or latency, stop and fill both. Do not let one 
 
 ### Check 3: Uncertainty Ratio
 
-**Question**: Is Yellow + Red at least 30% of all nodes?
+**Question**: Is Yellow + Red at least 30% of all nodes — and does the count reconcile?
+
+**Count check (added after a run reported "18 elements" and listed 16).** Recount the listed elements out loud, then compute the percentages against that number. A stated total that disagrees with the list is a failure regardless of the ratio.
 
 **Fail condition**: Yellow + Red < 30% of total mapped elements.
 
@@ -99,6 +101,8 @@ For each node missing confidence or latency, stop and fill both. Do not let one 
 ### Check 5: Actionability
 
 **Question**: Can the user name the very first concrete step to take, starting this afternoon?
+
+**Check 5b — The output ends there.** Nothing follows the first action: no summary, no closing thought, and no sentence certifying that the output is honest or compliant. "Honest.", "not bravado", "no jargon found in scan" are self-certification, and a receipt of compliance is not compliance. Five of six generative runs in the first eval produced one. If you are about to write one, stop.
 
 **Fail condition**: The first step cannot be stated in one sentence. It requires research, exploration, or "let me think about it."
 
